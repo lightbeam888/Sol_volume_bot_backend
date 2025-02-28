@@ -413,7 +413,12 @@ const harvestRemainingSOL = () => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: 'https://sol-volume-bot-frontend.vercel.app/', // Replace with your frontend's origin (e.g., React/Vue dev server)
+    methods: ['GET', 'POST'], // Allow only specific methods
+    allowedHeaders: ['Content-Type'], // Allow specific headers
+    credentials: true // If you need to send cookies or auth headers
+}));
 app.use(express_1.default.json());
 const port = process.env.PORT || 5000;
 // API Endpoints
