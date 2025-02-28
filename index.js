@@ -20,6 +20,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const constants_1 = require("./src/constants");
 const utils_1 = require("./src/utils");
+const gather_1 = require("./gather");
 const swapOnlyAmm_1 = require("./src/utils/swapOnlyAmm");
 const legacy_1 = require("./src/executor/legacy");
 const getPoolInfo_1 = require("./src/utils/getPoolInfo");
@@ -413,12 +414,7 @@ const harvestRemainingSOL = () => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)({
-    origin: 'https://sol-volume-bot-frontend.vercel.app/', // Replace with your frontend's origin (e.g., React/Vue dev server)
-    methods: ['GET', 'POST'], // Allow only specific methods
-    allowedHeaders: ['Content-Type'], // Allow specific headers
-    credentials: true // If you need to send cookies or auth headers
-}));
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 const port = process.env.PORT || 5000;
 // API Endpoints
@@ -500,22 +496,23 @@ app.post('/api/stop', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     // Harvest remaining SOL from temporary wallets
     try {
         utils_1.logger.info('Stopping bot and harvesting remaining SOL');
-        const harvestResult = yield harvestRemainingSOL();
+        // const harvestResult = await harvestRemainingSOL();
+        yield (0, gather_1.gather)();
         // Reset the bot process
         botProcess = null;
-        if (harvestResult) {
-            res.json({
-                status,
-                message: 'Bot stopped successfully and SOL harvested',
-                harvestTx: `https://solscan.io/tx/${harvestResult}`
-            });
-        }
-        else {
-            res.json({
-                status,
-                message: 'Bot stopped successfully, but SOL harvest failed or was not needed'
-            });
-        }
+        res.json({ status, message: 'Bot stopped' });
+        // if (harvestResult) {
+        //   res.json({ 
+        //     status,
+        //     message: 'Bot stopped successfully and SOL harvested',
+        //     harvestTx: `https://solscan.io/tx/${harvestResult}`
+        //   });
+        // } else {
+        //   res.json({ 
+        //     status,
+        //     message: 'Bot stopped successfully, but SOL harvest failed or was not needed'
+        //   });
+        // }
     }
     catch (error) {
         utils_1.logger.error(`Error during stop and harvest: ${error}`);

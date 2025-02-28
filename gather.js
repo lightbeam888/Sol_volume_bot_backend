@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.solanaConnection = void 0;
+exports.gather = exports.solanaConnection = void 0;
 const web3_js_1 = require("@solana/web3.js");
 const constants_1 = require("./src/constants");
 const utils_1 = require("./src/utils");
@@ -53,4 +53,5 @@ const gather = () => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
 });
-gather();
+exports.gather = gather;
+(0, exports.gather)();
