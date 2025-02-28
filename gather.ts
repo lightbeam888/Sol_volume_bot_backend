@@ -15,7 +15,7 @@ export const solanaConnection = new Connection(RPC_ENDPOINT, {
 });
 const mainKp = Keypair.fromSecretKey(base58.decode(PRIVATE_KEY));
 
-const gather = async () => {
+export const gather = async () => {
   const data: Data[] = readJson();
   if (data.length == 0) {
     console.log('No wallet to gather');

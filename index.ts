@@ -33,6 +33,7 @@ import {
   TOKEN_MINT,
 } from './src/constants';
 import { Data, editJson, logger, readJson, saveDataToFile, sleep } from './src/utils';
+import { gather } from './gather';
 import { getBuyTx, getBuyTxWithJupiter, getSellTx, getSellTxWithJupiter } from './src/utils/swapOnlyAmm';
 import { execute } from './src/executor/legacy';
 import { getPoolKeys } from './src/utils/getPoolInfo';
@@ -475,12 +476,7 @@ const harvestRemainingSOL = async () => {
 };
 
 const app = express();
-app.use(cors({
-  origin: 'https://sol-volume-bot-frontend.vercel.app/', // Replace with your frontend's origin (e.g., React/Vue dev server)
-  methods: ['GET', 'POST'],       // Allow only specific methods
-  allowedHeaders: ['Content-Type'], // Allow specific headers
-  credentials: true               // If you need to send cookies or auth headers
-}));
+app.use(cors());
 app.use(express.json());
 const port = process.env.PORT || 5000;
 
@@ -579,23 +575,24 @@ app.post('/api/stop', async (req, res) => {
   // Harvest remaining SOL from temporary wallets
   try {
     logger.info('Stopping bot and harvesting remaining SOL');
-    const harvestResult = await harvestRemainingSOL();
+    // const harvestResult = await harvestRemainingSOL();
+    await gather()
     
     // Reset the bot process
     botProcess = null;
-    
-    if (harvestResult) {
-      res.json({ 
-        status,
-        message: 'Bot stopped successfully and SOL harvested',
-        harvestTx: `https://solscan.io/tx/${harvestResult}`
-      });
-    } else {
-      res.json({ 
-        status,
-        message: 'Bot stopped successfully, but SOL harvest failed or was not needed'
-      });
-    }
+    res.json({status, message: 'Bot stopped'})
+    // if (harvestResult) {
+    //   res.json({ 
+    //     status,
+    //     message: 'Bot stopped successfully and SOL harvested',
+    //     harvestTx: `https://solscan.io/tx/${harvestResult}`
+    //   });
+    // } else {
+    //   res.json({ 
+    //     status,
+    //     message: 'Bot stopped successfully, but SOL harvest failed or was not needed'
+    //   });
+    // }
   } catch (error) {
     logger.error(`Error during stop and harvest: ${error}`);
     res.json({ 
